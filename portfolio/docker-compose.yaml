@@ -17,10 +17,10 @@ services:
       - traefik-public
     labels:
       - traefik.enable=true
-      - traefik.http.routers.portfolio-http.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.portfolio-http.rule=Host(`mamenesia.com`)
       - traefik.http.routers.portfolio-http.entrypoints=http
       - traefik.http.routers.portfolio-http.middlewares=https-redirect
-      - traefik.http.routers.portfolio-https.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.portfolio-https.rule=Host(`mamenesia.com`)
       - traefik.http.routers.portfolio-https.entrypoints=https
       - traefik.http.routers.portfolio-https.tls=true
       - traefik.http.routers.portfolio-https.tls.certresolver=le
