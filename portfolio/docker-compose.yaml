@@ -8,11 +8,10 @@ services:
       - "--rolling-restart"
     environment:
       # Google Artifact Registry authentication
-      - REPO_USER=_json_key
-      - REPO_PASS_FILE=/run/secrets/gcr-json-key
+      - WATCHTOWER_GOOGLE_ARTIFACT_REGISTRY=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./service-account-key.json:/run/secrets/gcr-json-key:ro
+      - /root/.config/gcloud:/config/gcloud:ro
   portfolio:
     # For production, use your private image
     image: asia-southeast2-docker.pkg.dev/mamenesia/images/portfolio:release
