@@ -1,0 +1,36 @@
+services:
+  watchtower:
+    image: containrrr/watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "60"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  portfolio-release:
+    image: asia-southeast2-docker.pkg.dev/mamenesia/images/portfolio:release
+    container_name: portfolio-release
+    restart: always
+    networks:
+      - traefik-public
+    labels:
+      - traefik.http.routers.portfolio-release-http.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.portfolio-release-http.entrypoints=http
+      - traefik.http.routers.portfolio-release-http.middlewares=https-redirect
+
+      - traefik.http.routers.portfolio-release-https.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.portfolio-release-https.entrypoints=https
+      - traefik.http.routers.portfolio-release-https.tls=true
+      - traefik.http.routers.portfolio-release-https.tls.certresolver=le
+      - traefik.http.routers.portfolio-release-https.service=portfolio-release-service
+      - traefik.http.services.portfolio-release-service.loadbalancer.server.port=3000
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - com.centurylinklabs.watchtower.enable=true
+
+volumes:
+  storage:
+
+networks:
+  traefik-public:
+    external: true
