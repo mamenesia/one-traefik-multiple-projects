@@ -9,22 +9,32 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   portfolio-release:
+    # For production, use your private image
     image: asia-southeast2-docker.pkg.dev/mamenesia/images/portfolio:release
     container_name: portfolio-release
     restart: always
     networks:
       - traefik-public
     labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      
+      # HTTP router configuration
       - traefik.http.routers.portfolio-release-http.rule=Host(`${DOMAIN?Variable not set}`)
       - traefik.http.routers.portfolio-release-http.entrypoints=http
       - traefik.http.routers.portfolio-release-http.middlewares=https-redirect
-
+      
+      # HTTPS router configuration
       - traefik.http.routers.portfolio-release-https.rule=Host(`${DOMAIN?Variable not set}`)
       - traefik.http.routers.portfolio-release-https.entrypoints=https
       - traefik.http.routers.portfolio-release-https.tls=true
       - traefik.http.routers.portfolio-release-https.tls.certresolver=le
       - traefik.http.routers.portfolio-release-https.service=portfolio-release-service
-      - traefik.http.services.portfolio-release-service.loadbalancer.server.port=3000      - traefik.enable=true
+      
+      # Service configuration
+      - traefik.http.services.portfolio-release-service.loadbalancer.server.port=3000
+      
+      # Watchtower configuration
       - com.centurylinklabs.watchtower.enable=true
 
 volumes:
