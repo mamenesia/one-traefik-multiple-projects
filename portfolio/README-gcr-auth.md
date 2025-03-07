@@ -31,7 +31,22 @@ If you need to upload a new key file:
    chmod 600 /path/to/portfolio/service-account-key.json
    ```
 
-## Step 3: Update Your Docker Compose Configuration
+## Step 3: Set Up Environment Variables
+
+Run the provided setup script to create the necessary environment variables:
+
+```bash
+chmod +x setup-credentials.sh
+./setup-credentials.sh
+```
+
+This script will:
+1. Check if the service account key file exists
+2. Set proper permissions for the key file
+3. Read the content of the key file
+4. Create or update the `.env` file with the necessary environment variables
+
+## Step 4: Update Your Docker Compose Configuration
 
 Make sure your docker-compose.yaml contains the following configuration for Watchtower:
 
@@ -46,13 +61,12 @@ watchtower:
   environment:
     # Google Artifact Registry authentication
     - REPO_USER=_json_key
-    - REPO_PASS_FILE=/run/secrets/gcr-json-key
+    - REPO_PASS=${GOOGLE_APPLICATION_CREDENTIALS}
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - ./service-account-key.json:/run/secrets/gcr-json-key:ro
 ```
 
-## Step 4: Restart Your Services
+## Step 5: Restart Your Services
 
 1. Restart the portfolio service:
    ```bash
@@ -68,20 +82,21 @@ Check the Watchtower logs to verify authentication is working:
 docker logs portfolio-watchtower-1
 ```
 
-You should no longer see the "Unauthenticated request" error.
+You should see messages like:
+```
+time="2025-03-07T16:42:08Z" level=info msg="Found new asia-southeast2-docker.pkg.dev/mamenesia/images/portfolio:release image (c989e527b0d0)"
+```
 
 ## How It Works
 
-This configuration uses the `_json_key` authentication method with Google Artifact Registry, which is the recommended approach for service accounts. The service account key file is mounted into the Watchtower container and used for authentication.
+This configuration uses the `_json_key` authentication method with Google Artifact Registry, which is the recommended approach for service accounts. The service account key content is passed as an environment variable.
 
 The key settings in the docker-compose.yaml file are:
 
 ```yaml
 environment:
   - REPO_USER=_json_key
-  - REPO_PASS_FILE=/run/secrets/gcr-json-key
-volumes:
-  - ./service-account-key.json:/run/secrets/gcr-json-key:ro
+  - REPO_PASS=${GOOGLE_APPLICATION_CREDENTIALS}
 ```
 
-This tells Watchtower to use the `_json_key` authentication method and read the key from the mounted file.
+This tells Watchtower to use the `_json_key` authentication method and read the key from the environment variable.
