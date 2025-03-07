@@ -7,13 +7,11 @@ services:
       - "60"
       - "--rolling-restart"
     environment:
-      # Authentication for Google Artifact Registry
-      - WATCHTOWER_USER=oauth2accesstoken
-      - WATCHTOWER_PASSWORD=/config/gcloud/application_default_credentials.json
+      # Direct registry authentication
+      - REGISTRY_USER=_json_key_base64
+      - REGISTRY_PASS=${GOOGLE_APPLICATION_CREDENTIALS_BASE64}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      # Mount Google Cloud credentials
-      - $HOME/.config/gcloud:/config/gcloud:ro
   portfolio:
     # For production, use your private image
     image: asia-southeast2-docker.pkg.dev/mamenesia/images/portfolio:release
