@@ -26,6 +26,7 @@ services:
       - traefik.http.routers.portfolio-https.tls.certresolver=le
       - traefik.http.routers.portfolio-https.service=portfolio-service
       - traefik.http.services.portfolio-service.loadbalancer.server.port=3000
+      - com.centurylinklabs.watchtower.enable=true
 
 volumes:
   storage:
