@@ -6,8 +6,15 @@ services:
       - "--interval"
       - "60"
       - "--rolling-restart"
+    environment:
+      # Authentication for Google Artifact Registry
+      - WATCHTOWER_REGISTRY_AUTHENTICATION=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      # Docker config with registry credentials for Ubuntu
+      - /root/.docker/config.json:/config.json:ro
+      # Google Cloud application default credentials
+      - /root/.config/gcloud:/root/.config/gcloud:ro
   portfolio:
     # For production, use your private image
     image: asia-southeast2-docker.pkg.dev/mamenesia/images/portfolio:release
