@@ -29,7 +29,7 @@ services:
       - traefik.http.routers.traefik-dashboard-http.middlewares=https-redirect
 
       # HTTP Basic Auth middleware
-      - traefik.http.middlewares.admin-auth.basicauth.users=admin:$$apr1$$ruca84Hq$$mbjdMZBAG.KWn7vfN/SNK/
+      - traefik.http.middlewares.admin-auth.basicauth.users=admin:$$apr1$$knceg2MF$$4jYYGzVsc2jcmkkG/pHpD0
       - traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket for reading service labels
