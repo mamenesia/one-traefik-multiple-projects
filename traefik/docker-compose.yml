@@ -15,26 +15,26 @@ services:
       - traefik.http.routers.traefik-dashboard.entrypoints=http
       - traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN?Variable not set}`)
       - traefik.http.routers.traefik-dashboard.service=api@internal
-
+      
       # HTTPS router configuration for dashboard
       - traefik.http.routers.traefik-dashboard-https.entrypoints=https
       - traefik.http.routers.traefik-dashboard-https.rule=Host(`traefik.${DOMAIN?Variable not set}`)
       - traefik.http.routers.traefik-dashboard-https.service=api@internal
       - traefik.http.routers.traefik-dashboard-https.tls=true
       - traefik.http.routers.traefik-dashboard-https.tls.certresolver=le
-
+      
       # Basic Auth for dashboard
       - traefik.http.middlewares.admin-auth.basicauth.users=${USERNAME:-admin}:${HASHED_PASSWORD:-$$2y$$05$$wHZkNF6e8g29dWtSJ0pNh.55UfmYwzlr4UFZsePQp0hFDHLxLeweO}
       - traefik.http.routers.traefik-dashboard.middlewares=admin-auth
       - traefik.http.routers.traefik-dashboard-https.middlewares=admin-auth
-
+      
       # Redirect HTTP to HTTPS
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
       - traefik.http.routers.traefik-dashboard.middlewares=https-redirect,admin-auth
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket for reading service labels
-      - traefik-public-certificates:/certificates # Volume for storing Let's Encrypt certificates
+      - ./certificates:/certificates # Volume for storing Let's Encrypt certificates
     environment:
       - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-your-cloudflare-email@example.com}
       # Use either API_KEY or DNS_API_TOKEN (not both)
@@ -59,7 +59,7 @@ services:
 
       # Dashboard configuration
       - --api.dashboard=true
-
+      
       # Logging configuration
       - --accesslog
       - --log
