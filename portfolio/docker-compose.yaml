@@ -5,6 +5,7 @@ services:
       - "--label-enable"
       - "--interval"
       - "60"
+      - "--rolling-restart"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   portfolio-release:
