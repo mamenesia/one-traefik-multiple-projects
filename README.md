@@ -291,4 +291,42 @@ For local development:
 2. Set `DOMAIN=localhost` in both `.env` files
 3. The configuration will automatically use HTTP only for local development
 
-This setup allows you to develop locally without needing to obtain SSL certificates for localhost domains.
+#### Local Domain Resolution
+
+When developing locally with custom domains like `localhost` and `traefik.localhost`, you need to ensure your hosts file is properly configured:
+
+1. Open your hosts file with administrator privileges:
+   - **Windows**: `C:\Windows\System32\drivers\etc\hosts`
+   - **Mac/Linux**: `/etc/hosts`
+
+2. Add these entries to your hosts file:
+   ```
+   127.0.0.1 localhost
+   127.0.0.1 traefik.localhost
+   ```
+
+3. Save the file and restart your browser
+
+#### Troubleshooting Local Development
+
+If you encounter a 404 error when accessing your domain:
+
+1. Verify your hosts file has the correct entries
+2. Ensure your `.env` files are using UTF-8 encoding without BOM
+3. Check that the `DOMAIN` variable is set to `localhost` in both `.env` files
+4. Restart your containers:
+   ```bash
+   cd traefik && docker-compose down && docker-compose up -d
+   cd ../portfolio && docker-compose down && docker-compose up -d
+   ```
+
+If you're having issues with the Google Artifact Registry authentication for local development, temporarily use the nginx:alpine image in your portfolio/docker-compose.yaml:
+
+```yaml
+# For production, use your private image
+# image: asia-southeast2-docker.pkg.dev/mamenesia/images/portfolio:release
+# Temporarily using nginx:alpine for local development
+image: nginx:alpine
+```
+
+This setup allows you to develop locally without needing to obtain SSL certificates for localhost domains or authenticate with Google Artifact Registry.
