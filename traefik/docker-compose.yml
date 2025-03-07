@@ -39,6 +39,12 @@ services:
       # Use either API_KEY or DNS_API_TOKEN (not both)
       - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY:-}
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN:-}
+    entrypoint: >
+      sh -c "
+        touch /certificates/acme.json;
+        chmod 600 /certificates/acme.json;
+        /entrypoint.sh traefik
+      "
     command:
       # Docker provider configuration
       - --providers.docker
