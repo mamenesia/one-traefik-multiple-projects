@@ -45,7 +45,8 @@ services:
       # Let's Encrypt configuration
       - --certificatesresolvers.le.acme.email=${ACME_EMAIL?Variable not set}
       - --certificatesresolvers.le.acme.storage=/certificates/acme.json
-      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=http
 
       # Logging and API configuration
       - --accesslog
