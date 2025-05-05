@@ -1,0 +1,40 @@
+services:
+  watchtower:
+    image: containrrr/watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "60"
+      - "--rolling-restart"
+    environment:
+      # Google Artifact Registry authentication
+      - REPO_USER=_json_key
+      - REPO_PASS=${GOOGLE_APPLICATION_CREDENTIALS}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  napfi-ai:
+    # For production, use your private image
+    image: asia-southeast2-docker.pkg.dev/mamenesia/images/napfi-ai:release
+    container_name: napfi-ai
+    restart: always
+    networks:
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.napfi-ai-http.rule=Host(`napfi.mamenesia.com`)
+      - traefik.http.routers.napfi-ai-http.entrypoints=http
+      # Removed the https-redirect middleware to prevent redirect loops
+      - traefik.http.routers.napfi-ai-https.rule=Host(`napfi.mamenesia.com`)
+      - traefik.http.routers.napfi-ai-https.entrypoints=https
+      - traefik.http.routers.napfi-ai-https.tls=true
+      - traefik.http.routers.napfi-ai-https.tls.certresolver=le
+      - traefik.http.routers.napfi-ai-https.service=napfi-ai-service
+      - traefik.http.services.napfi-ai-service.loadbalancer.server.port=3000
+      - com.centurylinklabs.watchtower.enable=true
+
+volumes:
+  storage:
+
+networks:
+  traefik-public:
+    external: true
