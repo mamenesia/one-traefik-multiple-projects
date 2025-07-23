@@ -1,0 +1,41 @@
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: pokedex-watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "60"
+      - "--rolling-restart"
+    environment:
+      # Google Artifact Registry authentication
+      - REPO_USER=_json_key
+      - REPO_PASS=${GOOGLE_APPLICATION_CREDENTIALS}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  pokedex:
+    # For production, use your private image
+    image: asia-southeast2-docker.pkg.dev/mamenesia/images/pokedex:release
+    container_name: pokedex
+    restart: always
+    networks:
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pokedex-http.rule=Host(`pokedex.mamenesia.com`)
+      - traefik.http.routers.pokedex-http.entrypoints=http
+      # Removed the https-redirect middleware to prevent redirect loops
+      - traefik.http.routers.pokedex-https.rule=Host(`pokedex.mamenesia.com`)
+      - traefik.http.routers.pokedex-https.entrypoints=https
+      - traefik.http.routers.pokedex-https.tls=true
+      - traefik.http.routers.pokedex-https.tls.certresolver=le
+      - traefik.http.routers.pokedex-https.service=pokedex-service
+      - traefik.http.services.pokedex-service.loadbalancer.server.port=3000
+      - com.centurylinklabs.watchtower.enable=true
+
+volumes:
+  storage:
+
+networks:
+  traefik-public:
+    external: true
