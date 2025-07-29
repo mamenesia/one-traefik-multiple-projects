@@ -22,6 +22,8 @@ services:
       # Ghost configuration
       - NODE_ENV=production
       - url=https://blog.mamenesia.com
+      - server__host=0.0.0.0
+      - server__port=2368
       - database__client=mysql
       - database__connection__host=ghost-db
       - database__connection__user=ghost
@@ -34,6 +36,8 @@ services:
       - mail__options__auth__user=${GHOST_MAIL_USER}
       - mail__options__auth__pass=${GHOST_MAIL_PASSWORD}
       - mail__from=${GHOST_MAIL_FROM}
+      - logging__level=info
+      - logging__transports=["stdout"]
     volumes:
       - ghost_content:/var/lib/ghost/content
     networks:
