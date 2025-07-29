@@ -27,6 +27,8 @@ services:
       - database__connection__user=ghost
       - database__connection__password=${GHOST_DB_PASSWORD}
       - database__connection__database=ghost
+      - database__connection__port=3306
+      - database__connection__ssl=false
       - mail__transport=SMTP
       - mail__options__service=Gmail
       - mail__options__auth__user=${GHOST_MAIL_USER}
@@ -38,7 +40,8 @@ services:
       - traefik-public
       - ghost-internal
     depends_on:
-      - ghost-db
+      ghost-db:
+        condition: service_healthy
     labels:
       - traefik.enable=true
       - traefik.http.routers.ghost-http.rule=Host(`blog.mamenesia.com`)
@@ -64,7 +67,21 @@ services:
       - ghost_db:/var/lib/mysql
     networks:
       - ghost-internal
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --innodb-buffer-pool-size=256M
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "ghost",
+          "-p${GHOST_DB_PASSWORD}",
+        ]
+      timeout: 20s
+      retries: 10
 
 volumes:
   ghost_content:
